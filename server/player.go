@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 
 	"github.com/coder/websocket"
 )
@@ -25,7 +24,7 @@ func newPlayer(id PlayerId, conn *websocket.Conn) *Player {
 
 func (p *Player) writeLoop(ctx context.Context) {
 	for data := range p.send {
-		var err = p.conn.Write(ctx, websocket.MessageText, data)
+		err := p.conn.Write(ctx, websocket.MessageText, data)
 		if err != nil {
 			return
 		}
@@ -34,16 +33,10 @@ func (p *Player) writeLoop(ctx context.Context) {
 
 func (p *Player) readLoop(ctx context.Context) {
 	for {
-		_, data, err := p.conn.Read(ctx)
+		_, _, err := p.conn.Read(ctx)
 		if err != nil {
-			return
+			return // client gone
 		}
-
-		log.Printf("[%s] received: %s", p.Id, data)
-
-		select {
-		case p.send <- data:
-		default:
-		}
+		// TODO decode the message into an Input and hand it to the world.
 	}
 }
