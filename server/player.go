@@ -39,12 +39,12 @@ func (p *Player) readLoop(ctx context.Context, world *World) {
 			return // client gone
 		}
 
-		var in Input
-		if err := json.Unmarshal(data, &in); err != nil {
+		var input Input
+		if err := json.Unmarshal(data, &input); err != nil {
 			continue // ignore malformed messages, keep the connection alive
 		}
-		in.PlayerId = p.Id // identity comes from the connection, not the client
+		input.PlayerId = p.Id // identity comes from the connection, not the client
 
-		world.inputs <- in
+		world.inputs <- input
 	}
 }

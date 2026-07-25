@@ -11,15 +11,41 @@ type Input struct {
 	Fire   bool    `json:"fire"`
 }
 
-type TankState struct {
+type Tank struct {
 	Id      PlayerId `json:"id"`
 	PosX    float64  `json:"x"`
 	PosY    float64  `json:"y"`
 	RotBody float64  `json:"rb"`
 	RotAim  float64  `json:"ra"`
+	Hp      int      `json:"hp"`
+	Score   int      `json:"sc"`
+
+	fireCooldown float64
+	respawnTimer float64
+}
+
+type Projectile struct {
+	Id   int     `json:"id"`
+	PosX float64 `json:"x"`
+	PosY float64 `json:"y"`
+
+	velX  float64
+	velY  float64
+	owner PlayerId
 }
 
 type Snapshot struct {
-	Tick  int         `json:"tick"`
-	Tanks []TankState `json:"tanks"`
+	Tick        int          `json:"tick"`
+	Tanks       []Tank       `json:"tanks"`
+	Projectiles []Projectile `json:"projectiles"`
 }
+
+type Message struct {
+	Type string `json:"type"`
+	Data any    `json:"data"`
+}
+
+const (
+	MessageJoined   = "joined"
+	MessageSnapshot = "snapshot"
+)

@@ -11,22 +11,22 @@ func main() {
 	var world = newWorld()
 	go world.run()
 
-	http.HandleFunc("/play", func(w http.ResponseWriter, r *http.Request) {
-		handlePlay(world, w, r)
+	http.HandleFunc("/play", func(writer http.ResponseWriter, request *http.Request) {
+		handlePlay(world, writer, request)
 	})
 
 	log.Println("listening on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func handlePlay(world *World, w http.ResponseWriter, r *http.Request) {
-	var id, err = authenticate(r)
+func handlePlay(world *World, writer http.ResponseWriter, request *http.Request) {
+	var id, err = authenticate(request)
 	if err != nil {
-		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		http.Error(writer, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
+	conn, err := websocket.Accept(writer, request, &websocket.AcceptOptions{
 		InsecureSkipVerify: true,
 	})
 
@@ -41,7 +41,7 @@ func handlePlay(world *World, w http.ResponseWriter, r *http.Request) {
 	log.Printf("[%s] connected", player.Id)
 	defer log.Printf("[%s] disconnected", player.Id)
 
-	var ctx = r.Context()
+	var ctx = request.Context()
 	go player.writeLoop(ctx)
 
 	world.join <- player

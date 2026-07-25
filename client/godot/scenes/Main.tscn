@@ -7,11 +7,13 @@ script = ExtResource("1_net")
 
 [node name="Tanks" type="Node2D" parent="."]
 
+[node name="Projectiles" type="Node2D" parent="."]
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="Status" type="Label" parent="HUD"]
 offset_left = 8.0
 offset_top = 4.0
 offset_right = 400.0
-offset_bottom = 27.0
+offset_bottom = 400.0
 text = "connecting…"

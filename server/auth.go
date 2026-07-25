@@ -7,11 +7,11 @@ import (
 )
 
 func authenticate(_ *http.Request) (PlayerId, error) {
-      return PlayerId(generateRandomId()), nil
+	return PlayerId(generateRandomId()), nil
 }
 
 func generateRandomId() string {
-      var b = make([]byte, 6)
-      rand.Read(b)
-      return hex.EncodeToString(b)
+	var randomBytes = make([]byte, 6)
+	rand.Read(randomBytes)
+	return hex.EncodeToString(randomBytes)
 }
