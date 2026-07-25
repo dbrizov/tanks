@@ -42,7 +42,7 @@ func (w *World) run() {
 			delete(w.players, p.Id)
 			delete(w.tanks, p.Id)
 			delete(w.currentInputs, p.Id)
-			close(p.send)
+			close(p.toClient)
 
 		case in := <-w.inputs:
 			w.applyInput(in)
@@ -77,7 +77,7 @@ func (w *World) broadcast() {
 
 	for _, p := range w.players {
 		select {
-		case p.send <- data:
+		case p.toClient <- data:
 		default: // buffer full → drop this frame
 		}
 	}
