@@ -1,13 +1,10 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/coder/websocket"
-	"github.com/coder/websocket/wsjson"
 )
 
 func main() {
@@ -18,34 +15,29 @@ func main() {
 }
 
 func handlePlay(w http.ResponseWriter, r *http.Request) {
+	id, err := authenticate(r)
+	if err != nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
 		InsecureSkipVerify: true,
 	})
 
 	if err != nil {
 		log.Printf("accept: %v", err)
+		return
 	}
 
 	defer conn.CloseNow()
 
-	log.Println("client conneted")
+	p := newPlayer(id, conn)
+	log.Printf("[%s] connected", p.Id)
+	defer log.Printf("[%s] disconnected", p.Id)
 
-	for {
-		ctx, cancel := context.WithTimeout(r.Context(), time.Minute)
-
-		var msg map[string]any
-		err := wsjson.Read(ctx, conn, &msg)
-		cancel()
-
-		if err != nil {
-			log.Printf("client gone: %v", err)
-		}
-
-		log.Printf("received: %v", msg)
-
-		if err := wsjson.Write(r.Context(), conn, msg); err != nil {
-			log.Printf("write: %v", err)
-			return
-		}
-	}
+	ctx := r.Context()
+	go p.writeLoop(ctx)
+	p.readLoop(ctx)
+	close(p.send)
 }
