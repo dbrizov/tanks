@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0main0godot01"]
+
+[ext_resource type="Script" path="res://scripts/net.gd" id="1_net"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_net")
+
+[node name="Tanks" type="Node2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="HUD"]
+offset_left = 8.0
+offset_top = 4.0
+offset_right = 400.0
+offset_bottom = 27.0
+text = "connecting…"

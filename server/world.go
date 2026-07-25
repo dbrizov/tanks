@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-const ticksPerSecond = 20
-
 type World struct {
 	players       map[PlayerId]*Player
 	tanks         map[PlayerId]*TankState

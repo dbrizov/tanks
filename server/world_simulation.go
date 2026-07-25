@@ -5,12 +5,13 @@ import (
 	"math/rand"
 )
 
-const (
-	arenaWidth  = 800.0
-	arenaHeight = 600.0
-	tankRadius  = 15.0
-	tankSpeed   = 200.0 // units per second
-)
+const ticksPerSecond = 30
+
+const arenaWidth = 1152.0
+const arenaHeight = 648.0
+
+const tankRadius = 15.0
+const tankSpeed = 200.0 // units per second
 
 func spawnTank(id PlayerId) *TankState {
 	var tankDiameter = tankRadius * 2
@@ -31,7 +32,7 @@ func (w *World) step(delta_time float64) {
 			continue
 		}
 
-		var direction = Vec2{X: in.Ax, Y: in.Ay}.Normalized()
+		var direction = Vector2{X: in.Ax, Y: in.Ay}.Normalized()
 		var deltaPos = direction.Scale(tankSpeed * delta_time)
 		tank.X += deltaPos.X
 		tank.Y += deltaPos.Y
@@ -63,8 +64,8 @@ func (w *World) resolveCollisions() {
 		for j := i + 1; j < len(tanks); j++ {
 			var a = tanks[i]
 			var b = tanks[j]
-			var aPos = Vec2{X: a.X, Y: a.Y}
-			var bPos = Vec2{X: b.X, Y: b.Y}
+			var aPos = Vector2{X: a.X, Y: a.Y}
+			var bPos = Vector2{X: b.X, Y: b.Y}
 
 			var dist = aPos.DistanceTo(bPos)
 			if dist == 0 || dist >= minDist {

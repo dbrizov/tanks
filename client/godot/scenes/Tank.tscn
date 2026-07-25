@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0tank0godot01"]
+
+[ext_resource type="Script" path="res://scripts/tank.gd" id="1_tank"]
+
+[node name="Tank" type="Node2D"]
+script = ExtResource("1_tank")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.27, 0.67, 1, 1)
+polygon = PackedVector2Array(-15, -13, 15, -13, 15, 13, -15, 13)
+
+[node name="Barrel" type="Polygon2D" parent="."]
+color = Color(0.9, 0.9, 0.9, 1)
+polygon = PackedVector2Array(0, -3, 24, -3, 24, 3, 0, 3)
