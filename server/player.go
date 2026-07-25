@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/coder/websocket"
 )
@@ -31,12 +32,19 @@ func (p *Player) writeLoop(ctx context.Context) {
 	}
 }
 
-func (p *Player) readLoop(ctx context.Context) {
+func (p *Player) readLoop(ctx context.Context, world *World) {
 	for {
-		_, _, err := p.conn.Read(ctx)
+		_, data, err := p.conn.Read(ctx)
 		if err != nil {
 			return // client gone
 		}
-		// TODO decode the message into an Input and hand it to the world.
+
+		var in Input
+		if err := json.Unmarshal(data, &in); err != nil {
+			continue // ignore malformed messages, keep the connection alive
+		}
+		in.PlayerId = p.Id // identity comes from the connection, not the client
+
+		world.inputs <- in
 	}
 }

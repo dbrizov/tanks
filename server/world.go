@@ -2,37 +2,30 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"time"
 )
 
 const ticksPerSecond = 20
 
-type TankState struct {
-	Id    PlayerId `json:"id"`
-	X     float64  `json:"x"`
-	Y     float64  `json:"y"`
-	Angle float64  `json:"angle"`
-}
-
-type Snapshot struct {
-	Tick  int         `json:"tick"`
-	Tanks []TankState `json:"tanks"`
-}
-
 type World struct {
-	players map[PlayerId]*Player
-	tanks   map[PlayerId]*TankState
-	join    chan *Player
-	leave   chan *Player
-	tick    int
+	players       map[PlayerId]*Player
+	tanks         map[PlayerId]*TankState
+	currentInputs map[PlayerId]Input // each player's most recent intent, read every tick
+	join          chan *Player
+	leave         chan *Player
+	inputs        chan Input
+	tick          int
 }
 
 func newWorld() *World {
 	return &World{
-		players: make(map[PlayerId]*Player),
-		tanks:   make(map[PlayerId]*TankState),
-		join:    make(chan *Player),
-		leave:   make(chan *Player),
+		players:       make(map[PlayerId]*Player),
+		tanks:         make(map[PlayerId]*TankState),
+		currentInputs: make(map[PlayerId]Input),
+		join:          make(chan *Player),
+		leave:         make(chan *Player),
+		inputs:        make(chan Input, 64),
 	}
 }
 
@@ -49,13 +42,28 @@ func (w *World) run() {
 		case p := <-w.leave:
 			delete(w.players, p.Id)
 			delete(w.tanks, p.Id)
+			delete(w.currentInputs, p.Id)
 			close(p.send)
+
+		case in := <-w.inputs:
+			w.applyInput(in)
 
 		case <-ticker.C:
 			w.broadcast()
 			w.tick++
 		}
 	}
+}
+
+func (w *World) applyInput(in Input) {
+	_, ok := w.tanks[in.PlayerId]
+	if !ok {
+		return // player already gone; ignore stray buffered input
+	}
+
+	w.currentInputs[in.PlayerId] = in
+
+	log.Printf("[%s] input ax=%.2f ay=%.2f fire=%v", in.PlayerId, in.Ax, in.Ay, in.Fire) // TEMP: remove once step() uses inputs in Step 5
 }
 
 func (w *World) broadcast() {

@@ -47,5 +47,5 @@ func handlePlay(world *World, w http.ResponseWriter, r *http.Request) {
 	world.join <- p
 	defer func() { world.leave <- p }()
 
-	p.readLoop(ctx)
+	p.readLoop(ctx, world)
 }
