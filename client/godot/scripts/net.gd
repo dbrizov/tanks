@@ -46,9 +46,12 @@ func _send_intent(delta: float) -> void:
 		return
 	_send_accum = 0.0
 
+	var mouse_pos := get_global_mouse_position()
 	var intent := {
 		"ax": Input.get_axis("left", "right"),  # -1 left, +1 right
 		"ay": Input.get_axis("up", "down"),  # -1 up, +1 down (Y-down, matches server)
+		"mx": mouse_pos.x,
+		"my": mouse_pos.y,
 		"fire": Input.is_action_pressed("fire"),
 	}
 	_socket.send_text(JSON.stringify(intent))
@@ -72,8 +75,8 @@ func _drain_snapshots() -> void:
 func _apply_snapshot(snapshot: Dictionary) -> void:
 	var tanks_in_snapshot := {}
 
-	for t in snapshot.tanks:
-		var id := str(t.id)
+	for tank_data in snapshot.tanks:
+		var id := str(tank_data.id)
 		tanks_in_snapshot[id] = true
 
 		var tank: Node2D = _tanks.get(id)
@@ -82,7 +85,10 @@ func _apply_snapshot(snapshot: Dictionary) -> void:
 			_tanks_root.add_child(tank)
 			_tanks[id] = tank
 
-		tank.set_state(Vector2(t.x, t.y), t.angle)
+		var pos: Vector2 = Vector2(tank_data.x, tank_data.y)
+		var rot_body: float = tank_data.rb
+		var rot_aim: float = tank_data.ra
+		tank.set_state(pos, rot_body, rot_aim)
 
 	# Despawn tanks that are no longer in the snapshot.
 	for existing_id in _tanks.keys():

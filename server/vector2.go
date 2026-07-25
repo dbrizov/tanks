@@ -19,6 +19,10 @@ func (v Vector2) Scale(s float64) Vector2 {
 	return Vector2{v.X * s, v.Y * s}
 }
 
+func (v Vector2) Dot(o Vector2) float64 {
+	return v.X*o.X + v.Y*o.Y
+}
+
 func (v Vector2) Length() float64 {
 	return math.Hypot(v.X, v.Y)
 }

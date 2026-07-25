@@ -10,18 +10,20 @@ const ticksPerSecond = 30
 const arenaWidth = 1152.0
 const arenaHeight = 648.0
 
-const tankRadius = 15.0
+const tankHalfWidth = 15.0
+const tankHalfHeight = 13.0
+
 const tankSpeed = 200.0 // units per second
 
 func spawnTank(id PlayerId) *TankState {
-	var tankDiameter = tankRadius * 2
-	var xOffset = rand.Float64() * (arenaWidth - tankDiameter)
-	var yOffset = rand.Float64() * (arenaHeight - tankDiameter)
+	var margin = math.Hypot(tankHalfWidth, tankHalfHeight)
+	var xOffset = rand.Float64() * (arenaWidth - 2*margin)
+	var yOffset = rand.Float64() * (arenaHeight - 2*margin)
 
 	return &TankState{
-		Id: id,
-		X:  tankRadius + xOffset,
-		Y:  tankRadius + yOffset,
+		Id:   id,
+		PosX: margin + xOffset,
+		PosY: margin + yOffset,
 	}
 }
 
@@ -32,23 +34,30 @@ func (w *World) step(delta_time float64) {
 			continue
 		}
 
-		var direction = Vector2{X: in.Ax, Y: in.Ay}.Normalized()
+		var direction = Vector2{X: in.AxisX, Y: in.AxisY}.Normalized()
 		var deltaPos = direction.Scale(tankSpeed * delta_time)
-		tank.X += deltaPos.X
-		tank.Y += deltaPos.Y
+		tank.PosX += deltaPos.X
+		tank.PosY += deltaPos.Y
 
 		if direction.X != 0 || direction.Y != 0 {
-			tank.Angle = math.Atan2(direction.Y, direction.X)
+			tank.RotBody = math.Atan2(direction.Y, direction.X)
 		}
+
+		var aimDirX = in.MouseX - tank.PosX
+		var aimDirY = in.MouseY - tank.PosY
+		tank.RotAim = math.Atan2(aimDirY, aimDirX)
 	}
 
 	w.resolveCollisions()
 
 	for _, tank := range w.tanks {
-		var maxX = arenaWidth - tankRadius
-		var maxY = arenaHeight - tankRadius
-		tank.X = clamp(tank.X, tankRadius, maxX)
-		tank.Y = clamp(tank.Y, tankRadius, maxY)
+		// A rotated box reaches further along the world axes than its half-extents.
+		var c = math.Abs(math.Cos(tank.RotBody))
+		var s = math.Abs(math.Sin(tank.RotBody))
+		var ex = tankHalfWidth*c + tankHalfHeight*s
+		var ey = tankHalfWidth*s + tankHalfHeight*c
+		tank.PosX = clamp(tank.PosX, ex, arenaWidth-ex)
+		tank.PosY = clamp(tank.PosY, ey, arenaHeight-ey)
 	}
 }
 
@@ -58,26 +67,33 @@ func (w *World) resolveCollisions() {
 		tanks = append(tanks, t)
 	}
 
-	const minDist = tankRadius * 2
-
 	for i := 0; i < len(tanks); i++ {
 		for j := i + 1; j < len(tanks); j++ {
 			var a = tanks[i]
 			var b = tanks[j]
-			var aPos = Vector2{X: a.X, Y: a.Y}
-			var bPos = Vector2{X: b.X, Y: b.Y}
 
-			var dist = aPos.DistanceTo(bPos)
-			if dist == 0 || dist >= minDist {
+			var separation, overlapping = tankOBB(a).Overlap(tankOBB(b))
+			if !overlapping {
 				continue
 			}
 
-			var push = bPos.Sub(aPos).Normalized().Scale((minDist - dist) / 2)
-			a.X -= push.X
-			a.Y -= push.Y
-			b.X += push.X
-			b.Y += push.Y
+			// Split the correction: push each tank half of the penetration apart.
+			var push = separation.Scale(0.5)
+			a.PosX -= push.X
+			a.PosY -= push.Y
+			b.PosX += push.X
+			b.PosY += push.Y
 		}
+	}
+}
+
+// tankOBB builds the oriented bounding box for a tank's body.
+func tankOBB(t *TankState) OBB {
+	return OBB{
+		Center:     Vector2{X: t.PosX, Y: t.PosY},
+		HalfWidth:  tankHalfWidth,
+		HalfHeight: tankHalfHeight,
+		Rot:        t.RotBody,
 	}
 }
 

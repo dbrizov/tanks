@@ -4,16 +4,19 @@ package main
 type Input struct {
 	PlayerId PlayerId `json:"-"`
 
-	Ax   float64 `json:"ax"`   // horizontal move axis [-1, 1]
-	Ay   float64 `json:"ay"`   // vertical move axis [-1, 1]
-	Fire bool    `json:"fire"`
+	AxisX  float64 `json:"ax"` // horizontal move axis [-1, 1]
+	AxisY  float64 `json:"ay"` // vertical move axis [-1, 1]
+	MouseX float64 `json:"mx"` // mouse x in world coords (aim target)
+	MouseY float64 `json:"my"` // mouse y in world coords (aim target)
+	Fire   bool    `json:"fire"`
 }
 
 type TankState struct {
-	Id    PlayerId `json:"id"`
-	X     float64  `json:"x"`
-	Y     float64  `json:"y"`
-	Angle float64  `json:"angle"`
+	Id      PlayerId `json:"id"`
+	PosX    float64  `json:"x"`
+	PosY    float64  `json:"y"`
+	RotBody float64  `json:"rb"`
+	RotAim  float64  `json:"ra"`
 }
 
 type Snapshot struct {
