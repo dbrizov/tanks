@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"time"
 )
 
@@ -11,7 +10,7 @@ const ticksPerSecond = 20
 type World struct {
 	players       map[PlayerId]*Player
 	tanks         map[PlayerId]*TankState
-	currentInputs map[PlayerId]Input // each player's most recent intent, read every tick
+	currentInputs map[PlayerId]Input
 	join          chan *Player
 	leave         chan *Player
 	inputs        chan Input
@@ -30,14 +29,14 @@ func newWorld() *World {
 }
 
 func (w *World) run() {
-	ticker := time.NewTicker(time.Second / ticksPerSecond)
+	var ticker = time.NewTicker(time.Second / ticksPerSecond)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case p := <-w.join:
 			w.players[p.Id] = p
-			w.tanks[p.Id] = &TankState{Id: p.Id, X: 400, Y: 300}
+			w.tanks[p.Id] = spawnTank(p.Id)
 
 		case p := <-w.leave:
 			delete(w.players, p.Id)
@@ -49,6 +48,7 @@ func (w *World) run() {
 			w.applyInput(in)
 
 		case <-ticker.C:
+			w.step(1.0 / ticksPerSecond)
 			w.broadcast()
 			w.tick++
 		}
@@ -56,23 +56,21 @@ func (w *World) run() {
 }
 
 func (w *World) applyInput(in Input) {
-	_, ok := w.tanks[in.PlayerId]
+	var _, ok = w.tanks[in.PlayerId]
 	if !ok {
 		return // player already gone; ignore stray buffered input
 	}
 
 	w.currentInputs[in.PlayerId] = in
-
-	log.Printf("[%s] input ax=%.2f ay=%.2f fire=%v", in.PlayerId, in.Ax, in.Ay, in.Fire) // TEMP: remove once step() uses inputs in Step 5
 }
 
 func (w *World) broadcast() {
-	snap := Snapshot{Tick: w.tick}
+	var snap = Snapshot{Tick: w.tick}
 	for _, t := range w.tanks {
 		snap.Tanks = append(snap.Tanks, *t)
 	}
 
-	data, err := json.Marshal(snap)
+	var data, err = json.Marshal(snap)
 	if err != nil {
 		return
 	}

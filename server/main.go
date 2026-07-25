@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	world := newWorld()
+	var world = newWorld()
 	go world.run()
 
 	http.HandleFunc("/play", func(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +20,7 @@ func main() {
 }
 
 func handlePlay(world *World, w http.ResponseWriter, r *http.Request) {
-	id, err := authenticate(r)
+	var id, err = authenticate(r)
 	if err != nil {
 		http.Error(w, "unauthorized", http.StatusUnauthorized)
 		return
@@ -37,15 +37,15 @@ func handlePlay(world *World, w http.ResponseWriter, r *http.Request) {
 
 	defer conn.CloseNow()
 
-	p := newPlayer(id, conn)
-	log.Printf("[%s] connected", p.Id)
-	defer log.Printf("[%s] disconnected", p.Id)
+	var player = newPlayer(id, conn)
+	log.Printf("[%s] connected", player.Id)
+	defer log.Printf("[%s] disconnected", player.Id)
 
-	ctx := r.Context()
-	go p.writeLoop(ctx)
+	var ctx = r.Context()
+	go player.writeLoop(ctx)
 
-	world.join <- p
-	defer func() { world.leave <- p }()
+	world.join <- player
+	defer func() { world.leave <- player }()
 
-	p.readLoop(ctx, world)
+	player.readLoop(ctx, world)
 }

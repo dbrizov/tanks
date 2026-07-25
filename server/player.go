@@ -25,7 +25,7 @@ func newPlayer(id PlayerId, conn *websocket.Conn) *Player {
 
 func (p *Player) writeLoop(ctx context.Context) {
 	for data := range p.send {
-		err := p.conn.Write(ctx, websocket.MessageText, data)
+		var err = p.conn.Write(ctx, websocket.MessageText, data)
 		if err != nil {
 			return
 		}
@@ -34,7 +34,7 @@ func (p *Player) writeLoop(ctx context.Context) {
 
 func (p *Player) readLoop(ctx context.Context, world *World) {
 	for {
-		_, data, err := p.conn.Read(ctx)
+		var _, data, err = p.conn.Read(ctx)
 		if err != nil {
 			return // client gone
 		}

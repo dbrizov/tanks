@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tanks</title>
+<style>
+  body { margin: 0; background: #111; color: #ddd;
+         font: 13px system-ui, sans-serif;
+         display: flex; flex-direction: column; align-items: center; }
+  h1 { font-size: 15px; font-weight: 600; margin: 12px 0 4px; }
+  #hud { margin-bottom: 8px; color: #888; }
+  #hud b { color: #6c6; }
+  #status.down { color: #e66; }
+  #status.up { color: #6c6; }
+  canvas { background: #1a1a1a; border: 1px solid #333; }
+  kbd { background: #333; border-radius: 3px; padding: 1px 5px; margin: 0 1px; }
+</style>
+</head>
+<body>
+<h1>Tanks — server-authoritative demo</h1>
+<div id="hud">
+  <span id="status" class="down">connecting…</span> ·
+  tick <b id="tick">0</b> · tanks <b id="count">0</b> ·
+  move <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+</div>
+<canvas id="c" width="800" height="600"></canvas>
+
+<script>
+const W = 800, H = 600, TANK_R = 15;
+const ctx = document.getElementById("c").getContext("2d");
+const statusEl = document.getElementById("status");
+const tickEl = document.getElementById("tick");
+const countEl = document.getElementById("count");
+
+// The client renders only what the server sends — it never moves a tank itself.
+let snapshot = { tick: 0, tanks: [] };
+
+// --- input: track held keys, send intent ~30x/sec ---
+const keys = {};
+addEventListener("keydown", e => { keys[e.key.toLowerCase()] = true; });
+addEventListener("keyup",   e => { keys[e.key.toLowerCase()] = false; });
+
+let ws;
+function connect() {
+  const proto = location.protocol === "https:" ? "wss" : "ws";
+  const host = location.host || "localhost:8080"; // fallback if opened via file://
+  ws = new WebSocket(`${proto}://${host}/play`);
+
+  ws.onopen = () => { statusEl.textContent = "connected"; statusEl.className = "up"; };
+  ws.onmessage = e => { snapshot = JSON.parse(e.data); };
+  ws.onclose = () => {
+    statusEl.textContent = "disconnected — retrying…";
+    statusEl.className = "down";
+    setTimeout(connect, 1000); // auto-reconnect so you can restart the server freely
+  };
+}
+connect();
+
+setInterval(() => {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  const ax = (keys["d"] ? 1 : 0) - (keys["a"] ? 1 : 0);
+  const ay = (keys["s"] ? 1 : 0) - (keys["w"] ? 1 : 0);
+  ws.send(JSON.stringify({ ax, ay, fire: !!keys[" "] }));
+}, 33);
+
+// --- render: draw the latest snapshot every animation frame ---
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  for (const t of snapshot.tanks) {
+    // body
+    ctx.beginPath();
+    ctx.arc(t.x, t.y, TANK_R, 0, Math.PI * 2);
+    ctx.fillStyle = "#4af";
+    ctx.fill();
+    // barrel, pointing along the server-sent angle
+    ctx.beginPath();
+    ctx.moveTo(t.x, t.y);
+    ctx.lineTo(t.x + Math.cos(t.angle) * (TANK_R + 8),
+               t.y + Math.sin(t.angle) * (TANK_R + 8));
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+  tickEl.textContent = snapshot.tick;
+  countEl.textContent = snapshot.tanks.length;
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
