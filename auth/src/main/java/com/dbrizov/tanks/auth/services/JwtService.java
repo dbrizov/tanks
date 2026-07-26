@@ -5,8 +5,9 @@ import java.util.Date;
 
 import javax.crypto.SecretKey;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.dbrizov.tanks.auth.config.JwtProperties;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -16,11 +17,9 @@ public class JwtService {
     private final SecretKey key;
     private final long expirationMinutes;
 
-    public JwtService(
-            @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration-minutes}") long expirationMinutes) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
-        this.expirationMinutes = expirationMinutes;
+    public JwtService(JwtProperties properties) {
+        this.key = Keys.hmacShaKeyFor(properties.secret().getBytes());
+        this.expirationMinutes = properties.expirationMinutes();
     }
 
     public String generateToken(String username) {
