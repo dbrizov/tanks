@@ -1,0 +1,5 @@
+# Godot editor data
+.godot/
+
+# Web export output
+build/

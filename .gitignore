@@ -1,6 +1,4 @@
-# Godot 4+ specific ignores
-.godot/
-/android/
-
-# Godot web export output
-client/godot/build/
+# Ignores live per-tier, in each tier's own folder:
+#   - client/godot/.gitignore
+#   - server/.gitignore
+#   - auth/.gitignore
