@@ -1,4 +1,4 @@
-package com.dbrizov.tanks.auth.web;
+package com.dbrizov.tanks.auth.controllers;
 
 import java.util.Map;
 
