@@ -5,11 +5,10 @@ const RECONNECT_DELAY := 1.0
 
 @export var tank_scene: PackedScene = preload("res://scenes/Tank.tscn")
 @export var projectile_scene: PackedScene = preload("res://scenes/Projectile.tscn")
-@export var server_url := "ws://localhost:8080/play"
 
 var _socket := WebSocketPeer.new()
 var _tanks := {}  # PlayerId (String) -> Tank node
-var _projectiles := {}  # projectile id (String) -> Projectile node
+var _projectiles := {}  # Projectile id (String) -> Projectile node
 var _self_id := ""
 var _send_accum := 0.0
 var _reconnect_accum := 0.0
@@ -20,7 +19,10 @@ var _reconnect_accum := 0.0
 
 
 func _ready() -> void:
-	_socket.connect_to_url(server_url)
+	if Session.token.is_empty():
+		get_tree().change_scene_to_file("res://scenes/Login.tscn")
+		return
+	_socket.connect_to_url(Session.play_url())
 
 
 func _process(delta: float) -> void:
@@ -33,16 +35,16 @@ func _process(delta: float) -> void:
 			_drain_packets()
 
 		WebSocketPeer.STATE_CLOSED:
-			_status.text = "disconnected — retrying…"
+			_status.text = "Disconnected — retrying…"
 			_reconnect_accum += delta
 			if _reconnect_accum >= RECONNECT_DELAY:
 				_reconnect_accum = 0.0
 				_reset()
 				_socket = WebSocketPeer.new()
-				_socket.connect_to_url(server_url)
+				_socket.connect_to_url(Session.play_url())
 
 		_:
-			_status.text = "connecting…"
+			_status.text = "Connecting…"
 
 
 func _send_intent(delta: float) -> void:
@@ -93,6 +95,7 @@ func _apply_tanks(snapshot: Dictionary) -> void:
 			tank = tank_scene.instantiate()
 			_tanks_root.add_child(tank)
 			_tanks[id] = tank
+			tank.set_label(id)
 
 		var pos: Vector2 = Vector2(tank_data.x, tank_data.y)
 		var rot_body: float = tank_data.rb
@@ -142,9 +145,9 @@ func _update_scoreboard(snapshot: Dictionary) -> void:
 			return a_id < b_id  # stable tiebreak by id so equal scores don't reshuffle
 	)
 
-	var lines := ["connected | tanks %d" % ids.size()]
+	var lines := ["Connected | Tanks %d" % ids.size()]
 	for id in ids:
-		var who: String = "you" if id == _self_id else str(id)
+		var who: String = str(id)
 		lines.append("%s: %d" % [who, scores[id]])
 
 	_status.text = "\n".join(lines)

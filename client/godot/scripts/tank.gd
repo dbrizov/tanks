@@ -3,6 +3,10 @@ extends Node2D
 const MAX_HP := 100.0
 
 
+func set_label(text: String) -> void:
+	$Name.text = text
+
+
 func set_state(pos: Vector2, rot_body: float, rot_aim: float, hp: int) -> void:
 	visible = hp > 0
 	if hp <= 0:

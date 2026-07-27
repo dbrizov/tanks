@@ -1,17 +1,45 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"errors"
 	"net/http"
+	"os"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
-func authenticate(_ *http.Request) (PlayerId, error) {
-	return PlayerId(generateRandomId()), nil
+var jwtSecret = loadJwtSecret()
+
+func loadJwtSecret() []byte {
+	var secret = os.Getenv("JWT_SECRET")
+	if secret != "" {
+		return []byte(secret)
+	}
+
+	return []byte("some-very-very-long-random-string-at-least-32-bytes-long")
 }
 
-func generateRandomId() string {
-	var randomBytes = make([]byte, 6)
-	rand.Read(randomBytes)
-	return hex.EncodeToString(randomBytes)
+func authenticate(request *http.Request) (PlayerId, error) {
+	var tokenString = request.URL.Query().Get("token")
+	if tokenString == "" {
+		return "", errors.New("missing token")
+	}
+
+	var claims jwt.RegisteredClaims
+	var _, err = jwt.ParseWithClaims(
+		tokenString,
+		&claims,
+		func(_ *jwt.Token) (any, error) { return jwtSecret, nil },
+		jwt.WithValidMethods([]string{"HS256"}),
+	)
+
+	if err != nil {
+		return "", err
+	}
+
+	if claims.Subject == "" {
+		return "", errors.New("token has no subject")
+	}
+
+	return PlayerId(claims.Subject), nil
 }
