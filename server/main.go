@@ -15,6 +15,12 @@ func main() {
 		handlePlay(world, writer, request)
 	})
 
+	http.HandleFunc("/health", func(writer http.ResponseWriter, _ *http.Request) {
+		writer.Header().Set("Content-Type", "application/json")
+		writer.WriteHeader(http.StatusOK)
+		_, _ = writer.Write([]byte(`{"status":"ok"}`))
+	})
+
 	log.Println("listening on http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

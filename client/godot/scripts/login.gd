@@ -17,6 +17,13 @@ func _ready() -> void:
 	_register_button.pressed.connect(_on_register_pressed)
 	_password.text_submitted.connect(func(_t): _on_login_pressed())
 
+	if not Session.config_ready:
+		_set_busy(true)
+		_status.text = "Loading…"
+		await Session.config_loaded
+		_set_busy(false)
+		_status.text = ""
+
 
 func _on_login_pressed() -> void:
 	_submit("/login", true)
@@ -81,7 +88,7 @@ func _handle_register_response(code: int) -> void:
 	elif code == 409:
 		_status.text = "Username already taken"
 	elif code == 400:
-		_status.text = "username min 3, password min 8 characters"
+		_status.text = "username min 3, password min 6 characters"
 	else:
 		_status.text = "Register failed (HTTP %d)" % code
 
