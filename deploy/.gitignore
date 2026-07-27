@@ -1,0 +1,2 @@
+# Never commit the real Secret — only secret.example.yaml is tracked.
+secret.yaml
