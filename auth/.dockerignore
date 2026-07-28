@@ -1,8 +1,0 @@
-.git
-.gitignore
-Dockerfile
-.dockerignore
-.gradle
-build
-bin
-HELP.md

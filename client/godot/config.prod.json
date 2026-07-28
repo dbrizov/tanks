@@ -1,4 +1,4 @@
 {
-  "auth_url": "https://api.denisrizov.com",
-  "server_url": "wss://api.denisrizov.com/play"
+  "auth_url": "https://dev.denisrizov.com",
+  "server_url": "wss://dev.denisrizov.com/play"
 }
