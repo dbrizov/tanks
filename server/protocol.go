@@ -35,7 +35,6 @@ type Projectile struct {
 }
 
 type Snapshot struct {
-	Tick        int          `json:"tick"`
 	Tanks       []Tank       `json:"tanks"`
 	Projectiles []Projectile `json:"projectiles"`
 }

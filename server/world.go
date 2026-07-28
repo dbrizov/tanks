@@ -85,7 +85,7 @@ func (w *World) applyInput(input Input) {
 }
 
 func (w *World) broadcast() {
-	var snapshot = Snapshot{Tick: w.tick}
+	var snapshot = Snapshot{}
 	for _, tank := range w.tanks {
 		snapshot.Tanks = append(snapshot.Tanks, *tank)
 	}
