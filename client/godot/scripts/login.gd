@@ -17,13 +17,6 @@ func _ready() -> void:
 	_register_button.pressed.connect(_on_register_pressed)
 	_password.text_submitted.connect(func(_t): _on_login_pressed())
 
-	if not Session.config_ready:
-		_set_busy(true)
-		_status.text = "Loading…"
-		await Session.config_loaded
-		_set_busy(false)
-		_status.text = ""
-
 
 func _on_login_pressed() -> void:
 	_submit("/login", true)

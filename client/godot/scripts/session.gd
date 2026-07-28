@@ -1,42 +1,18 @@
 extends Node
 
-signal config_loaded
-
 var token := ""
 var username := ""
-var auth_url := "http://127.0.0.1:8100"
-var server_url := "ws://127.0.0.1:8101/play"
-var config_ready := false
-
-var _http: HTTPRequest
+var auth_url := ""
+var server_url := ""
 
 
 func _ready() -> void:
-	_http = HTTPRequest.new()
-	add_child(_http)
-	_http.timeout = 5.0
-	_http.request_completed.connect(_on_config_loaded)
-	var err := _http.request("config.json")
-	if err != OK:
-		_finish_config()
-
-
-func _on_config_loaded(
-	result: int, code: int, _headers: PackedStringArray, body: PackedByteArray
-) -> void:
-	if result == HTTPRequest.RESULT_SUCCESS and code == 200:
-		var data = JSON.parse_string(body.get_string_from_utf8())
-		if typeof(data) == TYPE_DICTIONARY:
-			auth_url = str(data.get("auth_url", auth_url))
-			server_url = str(data.get("server_url", server_url))
-	_finish_config()
-
-
-func _finish_config() -> void:
-	if config_ready:
-		return
-	config_ready = true
-	config_loaded.emit()
+	if OS.is_debug_build():
+		auth_url = "http://127.0.0.1:8100"
+		server_url = "ws://127.0.0.1:8101/play"
+	else:
+		auth_url = "https://dev.denisrizov.com/tanks/auth"
+		server_url = "wss://dev.denisrizov.com/tanks/server/play"
 
 
 func play_url() -> String:
