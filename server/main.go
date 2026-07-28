@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/coder/websocket"
 )
@@ -21,8 +22,18 @@ func main() {
 		_, _ = writer.Write([]byte(`{"status":"ok"}`))
 	})
 
-	log.Println("listening on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	var addr = "127.0.0.1:" + portOrDefault()
+	log.Printf("listening on http://%s", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
+}
+
+func portOrDefault() string {
+	var port = os.Getenv("PORT")
+	if port != "" {
+		return port
+	}
+
+	return "8101"
 }
 
 func handlePlay(world *World, writer http.ResponseWriter, request *http.Request) {

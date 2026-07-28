@@ -4,8 +4,8 @@ signal config_loaded
 
 var token := ""
 var username := ""
-var auth_url := "http://localhost:8081"
-var server_url := "ws://localhost:8080/play"
+var auth_url := "http://127.0.0.1:8100"
+var server_url := "ws://127.0.0.1:8101/play"
 var config_ready := false
 
 var _http: HTTPRequest
