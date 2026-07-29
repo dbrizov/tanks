@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # One-time host setup for the tanks deployment. Run as root from the repo root
-# (which is expected to be /opt/tanks — see _docs/PUBLISH_HOME.md):
+# (which is expected to be /opt/tanks)
 #     sudo ./setup.sh
 #
 # Creates the service user, the config/state directories, seeds the game server
