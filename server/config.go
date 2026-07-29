@@ -17,8 +17,8 @@ type Config struct {
 	TankHalfWidth    float64 `json:"tank_half_width"`
 	TankHalfHeight   float64 `json:"tank_half_height"`
 	TankBarrelLength float64 `json:"tank_barrel_length"`
-	TankSpeed float64 `json:"tank_speed"` // units per second
-	TankMaxHp int     `json:"tank_max_hp"`
+	TankSpeed        float64 `json:"tank_speed"` // units per second
+	TankMaxHp        int     `json:"tank_max_hp"`
 	TankFireCooldown float64 `json:"tank_fire_cooldown"` // seconds between shots
 	TankRespawnDelay float64 `json:"tank_respawn_delay"` // seconds a dead tank waits before respawning
 
@@ -37,9 +37,8 @@ func defaultConfig() Config {
 		TankHalfWidth:    15.0,
 		TankHalfHeight:   13.0,
 		TankBarrelLength: 24.0,
-
-		TankSpeed: 200.0,
-		TankMaxHp: 100,
+		TankSpeed:        200.0,
+		TankMaxHp:        100,
 
 		TankFireCooldown: 0.35,
 		TankRespawnDelay: 2.0,
@@ -51,7 +50,12 @@ func defaultConfig() Config {
 }
 
 func loadConfig() Config {
-	var data, err = os.ReadFile(ConfigPath)
+	var path = os.Getenv("CONFIG")
+	if path == "" {
+		path = ConfigPath
+	}
+
+	var data, err = os.ReadFile(path)
 	if err != nil {
 		log.Printf("config: using defaults (%v)", err)
 		return defaultConfig()
@@ -59,7 +63,7 @@ func loadConfig() Config {
 
 	var config = defaultConfig()
 	if err := json.Unmarshal(data, &config); err != nil {
-		log.Printf("config: invalid %s, using defaults (%v)", ConfigPath, err)
+		log.Printf("config: invalid %s, using defaults (%v)", path, err)
 		return defaultConfig()
 	}
 
