@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	var world = newWorld()
+	var config = loadConfig()
+	var world = newWorld(config)
 	go world.run()
 
 	http.HandleFunc("/play", func(writer http.ResponseWriter, request *http.Request) {

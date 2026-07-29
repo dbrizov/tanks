@@ -14,10 +14,10 @@ type World struct {
 	join             chan *Player
 	leave            chan *Player
 	inputs           chan Input
-	tick             int
+	config           Config
 }
 
-func newWorld() *World {
+func newWorld(config Config) *World {
 	return &World{
 		players:       make(map[PlayerId]*Player),
 		tanks:         make(map[PlayerId]*Tank),
@@ -26,18 +26,20 @@ func newWorld() *World {
 		join:          make(chan *Player),
 		leave:         make(chan *Player),
 		inputs:        make(chan Input, 64),
+		config:        config,
 	}
 }
 
 func (w *World) run() {
-	var ticker = time.NewTicker(time.Second / ticksPerSecond)
+	var deltaTime = 1.0 / float64(w.config.TicksPerSecond)
+	var ticker = time.NewTicker(time.Duration(deltaTime * float64(time.Second)))
 	defer ticker.Stop()
 
 	for {
 		select {
 		case player := <-w.join:
 			w.players[player.Id] = player
-			w.tanks[player.Id] = spawnTank(player.Id)
+			w.tanks[player.Id] = w.spawnTank(player.Id)
 			w.sendJoined(player)
 
 		case player := <-w.leave:
@@ -51,9 +53,8 @@ func (w *World) run() {
 			w.applyInput(input)
 
 		case <-ticker.C:
-			w.step(1.0 / ticksPerSecond)
+			w.step(deltaTime)
 			w.broadcast()
-			w.tick++
 		}
 	}
 }

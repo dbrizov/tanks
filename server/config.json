@@ -1,0 +1,18 @@
+{
+  "ticks_per_second": 30,
+
+  "arena_width": 1152.0,
+  "arena_height": 648.0,
+
+  "tank_half_width": 15.0,
+  "tank_half_height": 13.0,
+  "tank_barrel_length": 24.0,
+  "tank_speed": 200.0,
+  "tank_max_hp": 100,
+  "tank_fire_cooldown": 0.35,
+  "tank_respawn_delay": 2.0,
+
+  "projectile_speed": 600.0,
+  "projectile_radius": 4.0,
+  "projectile_damage": 25
+}
