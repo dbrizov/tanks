@@ -2,3 +2,8 @@
 #   - client/godot/.gitignore
 #   - server/.gitignore
 #   - auth/.gitignore
+
+# Go Lang
+/.cache/
+/.config/
+/go/
