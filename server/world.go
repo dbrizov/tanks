@@ -11,6 +11,7 @@ type World struct {
 	currentInputs    map[PlayerId]Input
 	projectiles      map[int]*Projectile
 	nextProjectileId int
+	impacts          []Impact
 	join             chan *Player
 	leave            chan *Player
 	inputs           chan Input
@@ -94,6 +95,8 @@ func (w *World) broadcast() {
 	for _, projectile := range w.projectiles {
 		snapshot.Projectiles = append(snapshot.Projectiles, *projectile)
 	}
+
+	snapshot.Impacts = w.impacts
 
 	var data, err = json.Marshal(Message{Type: MessageSnapshot, Data: snapshot})
 	if err != nil {

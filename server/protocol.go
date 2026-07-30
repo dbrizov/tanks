@@ -35,9 +35,15 @@ type Projectile struct {
 	owner PlayerId
 }
 
+type Impact struct {
+	PosX float64 `json:"x"`
+	PosY float64 `json:"y"`
+}
+
 type Snapshot struct {
 	Tanks       []Tank       `json:"tanks"`
 	Projectiles []Projectile `json:"projectiles"`
+	Impacts     []Impact     `json:"impacts"`
 }
 
 type Message struct {

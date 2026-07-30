@@ -31,6 +31,8 @@ func (w *World) randomSpawnPos() Vector2 {
 }
 
 func (w *World) step(deltaTime float64) {
+	w.impacts = w.impacts[:0]
+
 	for _, tank := range w.tanks {
 		tank.fireCooldown -= deltaTime
 
@@ -95,6 +97,7 @@ func (w *World) advanceProjectiles(deltaTime float64) {
 		var victim = w.projectileHit(projectile, from, to)
 		if victim != nil {
 			victim.Hp -= w.config.ProjectileDamage
+			w.impacts = append(w.impacts, Impact{PosX: to.X, PosY: to.Y})
 			delete(w.projectiles, id)
 
 			if victim.Hp <= 0 {
@@ -109,6 +112,10 @@ func (w *World) advanceProjectiles(deltaTime float64) {
 		}
 
 		if to.X < 0 || to.X > w.config.ArenaWidth || to.Y < 0 || to.Y > w.config.ArenaHeight {
+			w.impacts = append(w.impacts, Impact{
+				PosX: clamp(to.X, 0, w.config.ArenaWidth),
+				PosY: clamp(to.Y, 0, w.config.ArenaHeight),
+			})
 			delete(w.projectiles, id)
 		}
 	}
