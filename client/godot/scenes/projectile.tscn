@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://ne2k6q8eatp0"]
+
+[ext_resource type="Script" uid="uid://tk147vykau6o" path="res://scripts/projectile.gd" id="1_proj"]
+
+[sub_resource type="Curve" id="Curve_trail"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_trail"]
+colors = PackedColorArray(1, 0.8, 0.25, 0, 1, 0.9, 0.4, 0.55)
+
+[node name="Projectile" type="Node2D" unique_id=2120845822]
+script = ExtResource("1_proj")
+
+[node name="Trail" type="Line2D" parent="." unique_id=1074553781]
+top_level = true
+width = 5.0
+width_curve = SubResource("Curve_trail")
+gradient = SubResource("Gradient_trail")
+begin_cap_mode = 2
+end_cap_mode = 2
+
+[node name="Halo" type="Polygon2D" parent="." unique_id=1439819988]
+color = Color(1, 0.9, 0.3, 0.25)
+polygon = PackedVector2Array(7, 0, 6.3068, 3.0372, 4.3644, 5.4728, 1.5576, 6.8245, -1.5576, 6.8245, -4.3644, 5.4728, -6.3068, 3.0372, -7, 0, -6.3068, -3.0372, -4.3644, -5.4728, -1.5576, -6.8245, 1.5576, -6.8245, 4.3644, -5.4728, 6.3068, -3.0372)
+
+[node name="Core" type="Polygon2D" parent="." unique_id=265068322]
+color = Color(1, 0.96, 0.65, 1)
+polygon = PackedVector2Array(3.5, 0, 3.0311, 1.75, 1.75, 3.0311, 0, 3.5, -1.75, 3.0311, -3.0311, 1.75, -3.5, 0, -3.0311, -1.75, -1.75, -3.0311, 0, -3.5, 1.75, -3.0311, 3.0311, -1.75)

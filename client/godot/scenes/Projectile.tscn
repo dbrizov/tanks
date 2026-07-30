@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://xysenemsttto"]
-
-[node name="Projectile" type="Node2D" unique_id=1667236025]
-
-[node name="Dot" type="Polygon2D" parent="." unique_id=885544454]
-color = Color(1, 0.9, 0.2, 1)
-polygon = PackedVector2Array(-4, -4, 4, -4, 4, 4, -4, 4)

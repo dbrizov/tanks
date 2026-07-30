@@ -66,7 +66,7 @@ func _handle_login_response(code: int, body: PackedByteArray) -> void:
 		if typeof(data) == TYPE_DICTIONARY and data.has("token"):
 			Session.token = str(data.token)
 			Session.username = _username.text.strip_edges()
-			get_tree().change_scene_to_file("res://scenes/Main.tscn")
+			get_tree().change_scene_to_file("res://scenes/main.tscn")
 			return
 		_status.text = "Unexpected response from server"
 	elif code == 401 or code == 403:

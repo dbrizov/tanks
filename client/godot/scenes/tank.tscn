@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://ds1lmlv0d650w"]
+
+[ext_resource type="Script" path="res://scripts/tank.gd" id="1_tank"]
+[ext_resource type="Script" path="res://scripts/tank_treads.gd" id="2_treads"]
+
+[node name="Tank" type="Node2D"]
+script = ExtResource("1_tank")
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Hull" type="Node2D" parent="Visual"]
+
+[node name="Treads" type="Node2D" parent="Visual/Hull"]
+script = ExtResource("2_treads")
+
+[node name="Body" type="Polygon2D" parent="Visual/Hull"]
+color = Color(0.27, 0.67, 1, 1)
+polygon = PackedVector2Array(-14, -8, 14, -8, 14, 8, -14, 8)
+
+[node name="Turret" type="Node2D" parent="Visual"]
+
+[node name="Barrel" type="Polygon2D" parent="Visual/Turret"]
+color = Color(0.78, 0.8, 0.84, 1)
+polygon = PackedVector2Array(0, -2.5, 24, -2.5, 24, 2.5, 0, 2.5)
+
+[node name="Base" type="Polygon2D" parent="Visual/Turret"]
+color = Color(0.16, 0.45, 0.7, 1)
+polygon = PackedVector2Array(7, 0, 6.4672, 2.6788, 4.9497, 4.9497, 2.6788, 6.4672, 0, 7, -2.6788, 6.4672, -4.9497, 4.9497, -6.4672, 2.6788, -7, 0, -6.4672, -2.6788, -4.9497, -4.9497, -2.6788, -6.4672, 0, -7, 2.6788, -6.4672, 4.9497, -4.9497, 6.4672, -2.6788)
+
+[node name="Muzzle" type="CPUParticles2D" parent="Visual/Turret"]
+position = Vector2(24, 0)
+local_coords = true
+emitting = false
+amount = 10
+lifetime = 0.16
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(1, 0)
+spread = 22.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 140.0
+initial_velocity_max = 260.0
+scale_amount_min = 1.5
+scale_amount_max = 3.0
+color = Color(1, 0.85, 0.35, 1)
+
+[node name="HpBarBg" type="Polygon2D" parent="Visual"]
+position = Vector2(-15, -27)
+color = Color(0.15, 0.15, 0.15, 1)
+polygon = PackedVector2Array(0, -2, 30, -2, 30, 2, 0, 2)
+
+[node name="HpBarFill" type="Polygon2D" parent="Visual"]
+position = Vector2(-15, -27)
+color = Color(0.2, 0.85, 0.3, 1)
+polygon = PackedVector2Array(0, -2, 30, -2, 30, 2, 0, 2)
+
+[node name="Name" type="Label" parent="Visual"]
+offset_left = -60.0
+offset_top = -52.0
+offset_right = 60.0
+offset_bottom = -29.0
+theme_override_font_sizes/font_size = 10
+text = "dbrizov"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="Explosion" type="CPUParticles2D" parent="."]
+emitting = false
+amount = 30
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+direction = Vector2(1, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 70.0
+initial_velocity_max = 200.0
+scale_amount_min = 2.0
+scale_amount_max = 4.0
+color = Color(1, 0.55, 0.2, 1)

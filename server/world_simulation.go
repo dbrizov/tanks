@@ -61,6 +61,7 @@ func (w *World) step(deltaTime float64) {
 		if inputs.Fire && tank.fireCooldown <= 0 {
 			w.fireProjectile(tank)
 			tank.fireCooldown = w.config.TankFireCooldown
+			tank.Shots++
 		}
 	}
 

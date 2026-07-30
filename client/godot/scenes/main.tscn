@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://ccus1lrb1bwuv"]
+
+[ext_resource type="Script" path="res://scripts/net.gd" id="1_net"]
+[ext_resource type="Script" path="res://scripts/arena.gd" id="2_arena"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.085, 0.1, 0.75)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 0.09)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_net")
+
+[node name="Arena" type="Node2D" parent="."]
+script = ExtResource("2_arena")
+
+[node name="Tanks" type="Node2D" parent="."]
+
+[node name="Projectiles" type="Node2D" parent="."]
+
+[node name="Effects" type="Node2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Status" type="Label" parent="HUD"]
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 320.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(0.9, 0.91, 0.93, 1)
+theme_override_font_sizes/font_size = 14
+text = "Connecting…"
+
+[node name="Scoreboard" type="PanelContainer" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -228.0
+offset_top = 10.0
+offset_right = -12.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Margin" type="MarginContainer" parent="HUD/Scoreboard"]
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Scoreboard/Margin"]
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="HUD/Scoreboard/Margin/VBox"]
+theme_override_colors/font_color = Color(0.9, 0.91, 0.93, 1)
+theme_override_font_sizes/font_size = 13
+text = "SCOREBOARD"
+
+[node name="Scores" type="GridContainer" parent="HUD/Scoreboard/Margin/VBox"]
+custom_minimum_size = Vector2(188, 0)
+layout_mode = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 4
+columns = 2

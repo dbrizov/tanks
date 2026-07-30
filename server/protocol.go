@@ -19,6 +19,7 @@ type Tank struct {
 	RotAim  float64  `json:"ra"`
 	Hp      int      `json:"hp"`
 	Score   int      `json:"sc"`
+	Shots   int      `json:"sh"`
 
 	fireCooldown float64
 	respawnTimer float64
