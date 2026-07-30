@@ -85,6 +85,7 @@ func _drain_packets() -> void:
 func _apply_snapshot(snapshot: Dictionary) -> void:
 	_apply_tanks(snapshot)
 	_apply_projectiles(snapshot)
+	_apply_impacts(snapshot)
 	_update_status(snapshot)
 	_update_scoreboard(snapshot)
 
@@ -134,10 +135,17 @@ func _apply_projectiles(snapshot: Dictionary) -> void:
 
 	for existing_id in _projectiles.keys():
 		if not present.has(existing_id):
-			var gone: Node2D = _projectiles[existing_id]
-			_spawn_hit_spark(gone.position)
-			gone.queue_free()
+			_projectiles[existing_id].queue_free()
 			_projectiles.erase(existing_id)
+
+
+func _apply_impacts(snapshot: Dictionary) -> void:
+	var impacts = snapshot.get("impacts")
+	if impacts == null:
+		return
+
+	for impact in impacts:
+		_spawn_hit_spark(Vector2(impact.x, impact.y))
 
 
 func _spawn_hit_spark(pos: Vector2) -> void:
