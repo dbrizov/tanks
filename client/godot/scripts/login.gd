@@ -57,7 +57,7 @@ func _on_request_completed(
 	if _pending_login:
 		_handle_login_response(code, body)
 	else:
-		_handle_register_response(code)
+		_handle_register_response(code, body)
 
 
 func _handle_login_response(code: int, body: PackedByteArray) -> void:
@@ -72,18 +72,23 @@ func _handle_login_response(code: int, body: PackedByteArray) -> void:
 	elif code == 401 or code == 403:
 		_status.text = "Invalid username or password"
 	else:
-		_status.text = "Login failed (HTTP %d)" % code
+		_status.text = _error_message(body, "Login failed (HTTP %d)" % code)
 
 
-func _handle_register_response(code: int) -> void:
+func _handle_register_response(code: int, body: PackedByteArray) -> void:
 	if code == 201 or code == 200:
 		_status.text = "Registered — now log in"
 	elif code == 409:
-		_status.text = "Username already taken"
-	elif code == 400:
-		_status.text = "username min 3, password min 6 characters"
+		_status.text = _error_message(body, "Username already taken")
 	else:
-		_status.text = "Register failed (HTTP %d)" % code
+		_status.text = _error_message(body, "Register failed (HTTP %d)" % code)
+
+
+func _error_message(body: PackedByteArray, fallback: String) -> String:
+	var data = JSON.parse_string(body.get_string_from_utf8())
+	if typeof(data) == TYPE_DICTIONARY and data.has("error"):
+		return str(data.error)
+	return fallback
 
 
 func _set_busy(busy: bool) -> void:

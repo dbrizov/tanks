@@ -6,6 +6,11 @@ from .errors import AuthError
 health_bp = Blueprint("health", __name__)
 auth_bp = Blueprint("auth", __name__)
 
+MIN_USERNAME_LENGTH = 3
+MAX_USERNAME_LENGTH = 20
+MIN_PASSWORD_LENGTH = 6
+MAX_PASSWORD_LENGTH = 72
+
 
 @health_bp.get("/health")
 def health():
@@ -43,12 +48,12 @@ def _present(value):
 def _validate_username(username):
     if not _present(username):
         raise AuthError(400, "username must not be blank")
-    if not (3 <= len(username) <= 50):
-        raise AuthError(400, "username must be between 3 and 50 characters")
+    if not (MIN_USERNAME_LENGTH <= len(username) <= MAX_USERNAME_LENGTH):
+        raise AuthError(400, f"username must be between {MIN_USERNAME_LENGTH} and {MAX_USERNAME_LENGTH} characters")
 
 
 def _validate_password(password):
     if not _present(password):
         raise AuthError(400, "password must not be blank")
-    if not (6 <= len(password) <= 100):
-        raise AuthError(400, "password must be between 6 and 100 characters")
+    if not (MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH):
+        raise AuthError(400, f"password must be between {MIN_PASSWORD_LENGTH} and {MAX_PASSWORD_LENGTH} characters")

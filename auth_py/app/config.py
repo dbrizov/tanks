@@ -7,6 +7,7 @@ DEV_JWT_SECRET = "some-very-very-long-random-string-at-least-32-bytes-long"
 class Config:
     JWT_EXPIRATION_MINUTES = 120
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MAX_CONTENT_LENGTH = 16 * 1024  # 16 KB
 
 
 class DevConfig(Config):
