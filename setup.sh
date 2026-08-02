@@ -81,12 +81,12 @@ After=network.target
 [Service]
 User=tanks
 Group=tanks
-WorkingDirectory=/opt/tanks/auth_py
+WorkingDirectory=/opt/tanks/auth
 Environment=APP_ENV=prod
 Environment=JWT_SECRET=$jwt_secret
 Environment=DB_PATH=/var/lib/tanks/auth.db
 Environment=APP_CORS_ALLOWED_ORIGINS=$CORS_ORIGIN
-ExecStart=/opt/tanks/auth_py/.venv/bin/gunicorn -w 2 -b 127.0.0.1:8100 wsgi:app
+ExecStart=/opt/tanks/auth/.venv/bin/gunicorn -w 2 -b 127.0.0.1:8100 wsgi:app
 Restart=always
 
 [Install]
